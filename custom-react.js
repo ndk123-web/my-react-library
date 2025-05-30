@@ -28,6 +28,7 @@
 // Inside {} we can only declare evaluation , can't like if() else
 // why ? because in the end of day that variables are stored in that place where it is in object 
 
+// now what react does is , it creates the Copy like Html Dom which is like tree structure 
 
 
 function myCustomRender(reactElement , mainDiv){

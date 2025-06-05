@@ -40,6 +40,17 @@ function customRender(element, container) {
   container.appendChild(newTag);
 }
 
+/*
+
+  Now Babel or EsBuild like transpilers which converts the JSX syntax to the
+  below object "MyElement"
+
+  and we simply add this into the customRender function
+
+  But this was old way of doing 
+
+ */
+
 // Example usage
 const myElement = {
   type: "div",

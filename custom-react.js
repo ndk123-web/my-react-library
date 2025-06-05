@@ -1,9 +1,11 @@
 function customRender(element, container) {
-  // If element is just a string, create a text node
+  // If the element is just a string, it means it's a text node
   // We can't directly append a string to the container, so we create a text node
   if (typeof element === "string") {
     const textNode = document.createTextNode(element);
+    // Append the text node to the container
     container.appendChild(textNode);
+    // We don't need to do anything else, so we return
     return;
   }
 
@@ -21,17 +23,19 @@ function customRender(element, container) {
 
   // Handle children (can be string or array or another object)
   const children = element.props.children;
+  // If children is an array, loop through each child and recursively call customRender
+  // e.g. <div><p>Hello from paragraph!</p><a href="https://google.com">Click to Google</a></div>
   if (Array.isArray(children)) {
-    // If children is an array, loop through each child and recursively call customRender
-    // e.g. <div><p>Hello from paragraph!</p><a href="https://google.com">Click to Google</a></div>
     children.forEach((child) => customRender(child, newTag));
-  } else if (typeof children === "object") {
-    // If children is an object, recursively call customRender
-    // e.g. <div><p>Hello from paragraph!</p></div>
+  }
+  // If children is an object, recursively call customRender
+  // e.g. <div><p>Hello from paragraph!</p></div>
+  else if (typeof children === "object") {
     customRender(children, newTag);
-  } else if (typeof children === "string") {
-    // If children is a string, set the text content of the new tag
-    // e.g. <p>Hello from paragraph!</p>
+  }
+  // If children is a string, set the text content of the new tag
+  // e.g. <p>Hello from paragraph!</p>
+  else if (typeof children === "string") {
     newTag.textContent = children;
   }
 
@@ -47,7 +51,9 @@ function customRender(element, container) {
 
   and we simply add this into the customRender function
 
-  But this was old way of doing 
+  React Still Using this Virtual DOM Behind the scenes by transpiling JSX to this object
+
+  This is the Base of React
 
  */
 

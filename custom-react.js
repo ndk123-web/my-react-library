@@ -1,86 +1,69 @@
-// The Problem was what if there multiple attributes of element
-// solution used -> for in loop because key value object
-
-const { Children } = require("react");
-
-// in react internally also uses this reactElement object structure
-// Babel or ESBuild like transpilers converts <m /> to that object like reactElement
-
-// Ex ->
-/* 
-    So we write like return in React 
-    <> 
-        <a href="https://google.com" target:"_blank" style : "color:red;"> 
-            Go to Google 
-        </a> 
-    </>
-    Babel for webpack or ESBuild for vite converts that into below 
-
-    import React from "react";
-    React.createElement(
-            'a',
-            {href : "https://google.com" , target : "_blank" , style : "color : red;"},
-            Go to Google
-        )
-*/
-
-// Interview Point of View
-// {} inside react element is called as evaluated expression
-// Inside {} we can only declare evaluation , can't like if() else
-// why ? because in the end of day that variables are stored in that place where it is in object
-
-// now what react does is , it creates the Copy like Html Dom which is like tree structure
-
-// function myCustomRender(reactElement , mainDiv){
-
-//     const myElement = document.createElement(reactElement.type);
-//     myElement.innerHTML = reactElement.children;
-
-//     for (const propKey in reactElement.props){
-//         if (propKey === "children") continue;
-//         myElement.setAttribute(String(propKey) , reactElement.props[propKey]);
-//     }
-
-//     mainDiv.appendChild(myElement);
-
-// }
-
-// function reactElement(){
-//     return {
-//         type : "a",
-//         props : {
-//             href : "https://google.com",
-//             target : "_blank",
-//             style : "color: red;"
-//         },
-//         children : "Click to Go to Google"
-//     }
-// }
-
-// const mainDiv = document.getElementById("root");
-
-// myCustomRender(reactElement(), mainDiv);
-
-function myRender(reactElement, mainDiv) {
-  const myElement = document.createElement(reactElement.type);
-  myElement.innerHTML = reactElement.children;
-
-  for (const propKey in reactElement.props) {
-    myElement.setAttribute(propKey, reactElement.props[propKey]);
+function customRender(element, container) {
+  // If element is just a string, create a text node
+  // We can't directly append a string to the container, so we create a text node
+  if (typeof element === "string") {
+    const textNode = document.createTextNode(element);
+    container.appendChild(textNode);
+    return;
   }
 
-  mainDiv.appendChild(myElement);
+  // Create a new tag, e.g. <div> or <p>
+  const newTag = document.createElement(element.type);
+
+  // Loop through all the props of the element
+  for (let propKey in element.props) {
+    // If the prop is not "children", set the attribute of the new tag
+    // e.g. <div id="parent"> or <a href="https://google.com">
+    if (propKey !== "children") {
+      newTag.setAttribute(propKey, element.props[propKey]);
+    }
+  }
+
+  // Handle children (can be string or array or another object)
+  const children = element.props.children;
+  if (Array.isArray(children)) {
+    // If children is an array, loop through each child and recursively call customRender
+    // e.g. <div><p>Hello from paragraph!</p><a href="https://google.com">Click to Google</a></div>
+    children.forEach((child) => customRender(child, newTag));
+  } else if (typeof children === "object") {
+    // If children is an object, recursively call customRender
+    // e.g. <div><p>Hello from paragraph!</p></div>
+    customRender(children, newTag);
+  } else if (typeof children === "string") {
+    // If children is a string, set the text content of the new tag
+    // e.g. <p>Hello from paragraph!</p>
+    newTag.textContent = children;
+  }
+
+  // Finally, append the new tag to the container
+  // e.g. <div id="parent"><p>Hello from paragraph!</p><a href="https://google.com">Click to Google</a></div>
+  container.appendChild(newTag);
 }
 
-let reactElement = {
-  type: "a",
+// Example usage
+const myElement = {
+  type: "div",
   props: {
-    href: "https://google.com",
-    target: "_blank",
-    style: "color: red;",
+    id: "parent",
+    children: [
+      {
+        type: "p",
+        props: {
+          children: "Hello from paragraph!",
+        },
+      },
+      {
+        type: "a",
+        props: {
+          href: "https://google.com",
+          target: "_blank",
+          children: "Click to Google",
+        },
+      },
+    ],
   },
-  children: "Click to Go to Google",
 };
 
 const mainDiv = document.getElementById("root");
-myRender(reactElement, mainDiv);
+customRender(myElement, mainDiv);
+
